@@ -8,12 +8,6 @@
 **한 마리의 유기동물도, 반려동물도 잊히지 않도록**  
 DID를 통해 유기동물의 존재를 기록하고 입양과 후원을 연결하는 웹 플랫폼
 
-[![Website](https://img.shields.io/badge/Website-puppypaw.site-green)](http://puppypaw.site/)
-[![K-PaaS](https://img.shields.io/badge/K--PaaS-9th_Competition-blue)](https://www.k-paas.or.kr/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-[데모 보기](#-시연-영상) · [아키텍처](#-시스템-아키텍처) · [기술 스택](#-기술-스택)
-
 </div>
 
 ---
