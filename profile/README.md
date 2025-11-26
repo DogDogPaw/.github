@@ -171,47 +171,6 @@ DID를 통해 유기동물의 존재를 기록하고 입양과 후원을 연결�
 ## 주요 플로우
 
 ### 1. 회원가입 플로우
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant Frontend
-    participant MetaMask
-    participant Gateway as API Gateway
-    participant VC as VC Service
-    participant Blockchain
-    
-    User->>Frontend: 회원가입 시작
-    Frontend->>MetaMask: 지갑 연결 요청
-    MetaMask->>User: 지갑 연결 승인 요청
-    User->>MetaMask: 승인
-    MetaMask-->>Frontend: 지갑 주소 반환
-    
-    Frontend->>User: 이메일 입력 요청
-    User->>Frontend: 이메일 입력
-    Frontend->>Gateway: 이메일 인증 요청
-    Gateway->>User: 인증 메일 발송
-    User->>Gateway: 이메일 인증 완료
-    
-    Frontend->>User: 개인정보 입력 요청
-    User->>Frontend: 정보 입력 (이름, 연락처 등)
-    
-    Frontend->>MetaMask: 서명 요청 (개인정보 해시)
-    MetaMask->>User: 서명 승인 요청
-    User->>MetaMask: 서명 승인
-    MetaMask-->>Frontend: 서명 완료
-    
-    Frontend->>Gateway: 회원가입 요청<br/>(지갑주소, 개인정보 해시, 서명)
-    Gateway->>VC: DID 생성 요청
-    VC->>Blockchain: 사용자 DID 등록 트랜잭션
-    Blockchain-->>VC: 트랜잭션 완료
-    VC-->>Gateway: DID 생성 완료
-    Gateway-->>Frontend: 회원가입 완료
-    Frontend-->>User: 가입 완료 메시지
-```
-
-![회원가입 플로우](./assets/flow-signup.png)
-
 **회원가입 프로세스:**
 1. MetaMask 지갑 연결 및 주소 획득
 2. 이메일 인증
@@ -222,40 +181,6 @@ sequenceDiagram
 ---
 
 ### 2. 로그인 플로우
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant Frontend
-    participant MetaMask
-    participant Gateway as API Gateway
-    participant VC as VC Service
-    participant Spring as Domain Service
-    
-    User->>Frontend: 로그인 버튼 클릭
-    Frontend->>MetaMask: 지갑 연결 요청
-    MetaMask->>User: 지갑 연결 승인 요청
-    User->>MetaMask: 승인
-    MetaMask-->>Frontend: 지갑 주소 반환
-    
-    Frontend->>Gateway: 로그인 요청<br/>(지갑 주소)
-    Gateway->>Spring: 사용자 조회
-    Spring-->>Gateway: 사용자 정보
-    
-    Gateway->>VC: VP 생성 요청
-    VC->>MetaMask: VP 서명 요청
-    MetaMask->>User: 서명 승인 요청
-    User->>MetaMask: 서명 승인
-    MetaMask-->>VC: 서명 완료
-    VC-->>Gateway: VP 발급 (JWT 토큰)
-    
-    Gateway-->>Frontend: 로그인 성공<br/>(JWT 토큰)
-    Frontend->>Frontend: 토큰 저장 (세션 시작)
-    Frontend-->>User: 로그인 완료
-```
-
-![로그인 플로우](./assets/flow-login.png)
-
 **로그인 프로세스:**
 1. MetaMask 지갑 연결
 2. 지갑 주소로 사용자 조회
@@ -266,57 +191,6 @@ sequenceDiagram
 ---
 
 ### 3. 펫 등록 플로우
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant Frontend
-    participant Gateway as API Gateway
-    participant Spring as Domain Service
-    participant ML as ML Service
-    participant VC as VC Service
-    participant Blockchain
-    participant Indexer
-    
-    User->>Frontend: 펫 등록 시작
-    Frontend->>User: JWT 토큰 확인
-    
-    Frontend->>User: 펫 정보 입력 요청
-    User->>Frontend: 펫 정보 입력<br/>(이름, 나이, 품종 등)
-    
-    Frontend->>User: 비문 사진 촬영 요청
-    User->>Frontend: 비문 사진 업로드
-    
-    Frontend->>Gateway: 비문 검증 요청
-    Gateway->>ML: 비문 특징벡터 추출
-    ML->>ML: Siamese Network 모델 실행
-    ML-->>Gateway: 특징벡터 반환
-    
-    Gateway->>Spring: 기존 비문 중복 체크
-    Spring-->>Gateway: 중복 없음 확인
-    
-    Gateway->>VC: DID 생성 요청<br/>(특징벡터 해시)
-    VC->>VC: DID 표준 형식 생성
-    
-    Gateway->>User: 트랜잭션 서명 요청<br/>(MetaMask)
-    User->>Gateway: 서명 완료
-    
-    Gateway->>VC: VC 발급 요청
-    VC->>Blockchain: PetDID 등록 트랜잭션
-    Blockchain-->>VC: 트랜잭션 완료
-    
-    Blockchain->>Indexer: 이벤트 발생
-    Indexer->>Indexer: 이벤트 수집
-    Indexer->>Spring: DB 동기화 요청
-    
-    Spring->>Spring: 펫 정보 저장
-    Spring-->>Gateway: 등록 완료
-    Gateway-->>Frontend: 펫 등록 성공
-    Frontend-->>User: 등록 완료 메시지
-```
-
-![펫 등록 플로우](./assets/flow-pet-register.png)
-
 **펫 등록 프로세스:**
 1. 로그인 상태 확인 (JWT 토큰)
 2. 펫 기본 정보 입력
@@ -331,78 +205,6 @@ sequenceDiagram
 ---
 
 ### 4. 펫 이전 (입양) 플로우
-
-```mermaid
-sequenceDiagram
-    actor Adopter as 입양자
-    actor Adoptee as 피입양자
-    participant Frontend
-    participant Gateway as API Gateway
-    participant Spring as Domain Service
-    participant Chat as Chat Service
-    participant ML as ML Service
-    participant VC as VC Service
-    participant Blockchain
-    
-    Note over Adopter,Spring: 1단계: 입양 공고 및 상담
-    Adoptee->>Frontend: 입양 공고 작성
-    Frontend->>Spring: 공고 저장
-    
-    Adopter->>Frontend: 입양 공고 조회
-    Adopter->>Frontend: "입양 상담하기" 클릭
-    Frontend->>Spring: 채팅방 생성 요청
-    Spring-->>Chat: 1:1 채팅방 생성
-    
-    Adopter<<->>Adoptee: 실시간 채팅 상담
-    
-    Note over Adopter,Blockchain: 2단계: 입양자 서명
-    Adopter->>Frontend: "입양 신청하기" 클릭
-    Frontend->>Gateway: 입양 신청 요청
-    Gateway->>Adopter: 서명 요청 (MetaMask)
-    Adopter->>Gateway: 서명 완료
-    Gateway->>Spring: 입양 신청 상태 저장
-    Spring-->>Adoptee: 알림 전송
-    
-    Note over Adopter,Blockchain: 3단계: 비문 검증
-    Adoptee->>Frontend: 입양 절차 시작
-    Frontend->>Adoptee: 비문 사진 촬영 요청
-    Adoptee->>Frontend: 비문 사진 업로드
-    
-    Frontend->>Gateway: 비문 검증 요청
-    Gateway->>ML: 특징벡터 추출
-    ML-->>Gateway: 특징벡터 반환
-    
-    Gateway->>Spring: 기존 비문과 유사도 비교
-    Spring->>Spring: 유사도 계산
-    
-    alt 유사도 >= 85%
-        Spring-->>Gateway: 검증 성공
-        
-        Note over Adopter,Blockchain: 4단계: 소유권 이전
-        Gateway->>Adoptee: 서명 요청 (MetaMask)
-        Adoptee->>Gateway: 서명 완료
-        
-        Gateway->>VC: VC 업데이트 요청
-        VC->>Blockchain: Guardian 변경 트랜잭션<br/>(Adoptee → Adopter)
-        Blockchain-->>VC: 트랜잭션 완료
-        
-        VC-->>Gateway: VC 이전 완료
-        Gateway->>Spring: 입양 완료 상태 저장
-        Spring-->>Frontend: 입양 완료
-        
-        Frontend->>Chat: 입양 완료 알림 전송
-        Frontend-->>Adopter: 입양 완료 메시지
-        Frontend-->>Adoptee: 입양 완료 메시지
-        
-    else 유사도 < 85%
-        Spring-->>Gateway: 검증 실패
-        Gateway-->>Frontend: 비문 불일치
-        Frontend-->>Adoptee: 재촬영 요청
-    end
-```
-
-![펫 이전 플로우](./assets/flow-adoption.png)
-
 **입양 프로세스:**
 
 #### 1단계: 입양 공고 및 상담
