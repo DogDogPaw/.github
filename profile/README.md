@@ -410,7 +410,7 @@ sequenceDiagram
 | 이름 | 역할 | 소속 | 이메일 | GitHub |
 |------|------|------|--------|--------|
 | 모진영 | 팀장, 풀스택 개발 | 상명대학교 | ahwlsqja1324@gmail.com | [@ahwlsdud](링크) |
-| 신윤진 | 백엔드 개발 | 상명대학교 | yj001shin@naver.com | [@nomad1jin](링크) |
+| 신윤진 | 백엔드 개발 | 상명대학교 | yj001shin@naver.com | [@nomad1jin](https://github.com/nomad1jin) |
 | 박수현 | 프론트엔드 개발 | 상명대학교 | tngus092112@gmail.com | [@onion](링크) |
 
 ---
